@@ -1,6 +1,6 @@
 {
-  "name": "complejidad",
-  "version": "1.0.0",
+  "name": "proyecto-complejidad",
+  "version": "0.1",
   "description": "An Electron application with React",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -23,16 +23,19 @@
   "devDependencies": {
     "@electron/notarize": "^1.2.3",
     "@vitejs/plugin-react": "^3.1.0",
-    "electron": "^22.3.4",
-    "electron-builder": "^23.6.0",
+    "autoprefixer": "^10.4.14",
+    "electron": "^24.3.1",
+    "electron-builder": "^24.4.0",
     "electron-vite": "^1.0.21",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
+    "postcss": "^8.4.23",
     "prettier": "^2.8.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.2",
     "vite": "^4.2.1"
   }
 }
