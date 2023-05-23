@@ -1,9 +1,11 @@
-import Versions from './components/Versions'
-
 function App() {
+  function handleButtonClick() {
+    console.log(window.api.ls())
+  }
+
   return (
     <div className="">
-      <Versions />
+      <button onClick={handleButtonClick}>Run CLI Command</button>
     </div>
   )
 }

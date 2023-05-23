@@ -1,4 +1,5 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
+const { exec } = require('child_process')
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -69,3 +70,24 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+function executeCommand(command) {
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing command: ${command}`)
+      console.error(error)
+    } else {
+      console.log(`Command executed successfully: ${command}`)
+      console.log(`stdout: ${stdout}`)
+      console.log(`stderr: ${stderr}`)
+    }
+  })
+}
+
+ipcMain.on('ls', () => {
+  executeCommand('ls')
+})
+
+// ipcMain.handle('ls', (event, command) => {
+//   return 'adfa'
+// })
