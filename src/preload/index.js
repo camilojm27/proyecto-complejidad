@@ -3,7 +3,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   ls: () => ipcRenderer.send('ls'),
-  getLs: () => ipcRenderer.invoke('get:ls')
+  getLs: () => ipcRenderer.invoke('get:ls'),
+  minizinc: () => ipcRenderer.invoke('minizinc')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
