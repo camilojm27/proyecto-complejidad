@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: com.complejidad.app
 productName: complejidad
 directories:
   buildResources: build
@@ -30,13 +30,13 @@ dmg:
 linux:
   target:
     - AppImage
-    - snap
     - deb
+    - rpm
   maintainer: electronjs.org
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates
+#publish:
+#  provider: generic
+#  url: https://example.com/auto-updates
