@@ -6,10 +6,11 @@ import App from './App'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Form } from './pages/Form'
 import Stepper from './components/Stepper'
+import Versions from './components/Versions'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Form />
+    element: <Versions />
   },
   {
     path: '/teams/:numTeams/:minSize/:maxSize',

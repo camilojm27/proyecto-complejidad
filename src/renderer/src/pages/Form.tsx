@@ -1,51 +1,40 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-export const Form = () => {
-  const [numTeams, setNumTeams] = useState('')
-  const [minSize, setMinSize] = useState('')
-  const [maxSize, setMaxSize] = useState('')
-  const [distancias, setDistancias] = useState([[]])
+export const Form = (): JSX.Element => {
+  const [numTeams, setNumTeams] = useState(0)
+  const [minSize, setMinSize] = useState(0)
+  const [maxSize, setMaxSize] = useState(0)
+  const [matrix, setMatrix] = useState([])
 
   const navigate = useNavigate()
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     console.log('Número de equipos:', numTeams)
     console.log('Tamaño mínimo:', minSize)
     console.log('Tamaño máximo:', maxSize)
-    console.log('Distancias:', distancias)
     //navigate(`/teams/${numTeams}/${minSize}/${maxSize}`)
   }
-  const handleChange = (rowIndex, colIndex, value) => {
-    const updatedDistanciasEquipo = [...distancias]
-    console.log(rowIndex, colIndex, value)
-    console.log(distancias)
-    updatedDistanciasEquipo[rowIndex][colIndex] = Number.parseInt(value.toString())
-    setDistancias(updatedDistanciasEquipo)
-    updatedDistanciasEquipo[colIndex][rowIndex] = Number.parseInt(value.toString())
-    setDistancias(updatedDistanciasEquipo)
-    console.log(distancias)
-  }
 
-  const generateTableRows = () => {
-    const rows = []
-    for (let i = 0; i < numTeams; i++) {
-      const row = []
-      for (let j = 0; j < numTeams; j++) {
-        const distancia = i === j ? 0 : distancias[i]?.[j] || distancias[j]?.[i] || '' // Set diagonal values to 0
-        row.push(
-          <td key={j}>
-            <input
-              className="border border-gray-400 p-2 w-full"
-              type="number"
-              defaultValue={distancia}
-              onChange={(e) => handleChange(i, j, e.target.value)}
-            />
-          </td>
-        )
-      }
-      rows.push(<tr key={i}>{row}</tr>)
+  const handleSizeChange = (event) => {
+    const newSize = event.target.value
+    setNumTeams(newSize)
+    const newMatrix = Array.from({ length: newSize }, (_, rowIndex) =>
+      Array.from({ length: newSize }, (_, cellIndex) => (rowIndex === cellIndex ? 0 : ''))
+    )
+    setMatrix(newMatrix)
+  }
+  const handleCellChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    rowIndex: number,
+    cellIndex: number
+  ) => {
+    const newMatrix: number[] = [...matrix]
+    newMatrix[rowIndex][cellIndex] = Number.parseInt(event.target.value)
+    if (rowIndex < cellIndex) {
+      newMatrix[cellIndex][rowIndex] = Number.parseInt(event.target.value)
     }
-    return rows
+    setMatrix(newMatrix)
+    console.log(newMatrix)
   }
 
   return (
@@ -61,7 +50,7 @@ export const Form = () => {
             type="number"
             id="numEquipos"
             value={numTeams}
-            onChange={(e) => setNumTeams(e.target.value)}
+            onChange={handleSizeChange}
             required
           />
         </div>
@@ -87,17 +76,34 @@ export const Form = () => {
             type="number"
             id="tamanioMaximo"
             value={maxSize}
-            onChange={(e) => setMaxSize(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxSize(e.target.value)}
             required
           />
         </div>
-        {numTeams > 1 && (
+        {numTeams > 0 && (
           <div className="mb-4">
             <h2 className="text-xl font-bold mb-4">
               Ingrese las distancias entre ciudades para cada equipo:
             </h2>
-            <table className="border-collapse border border-gray-400">
-              <tbody>{generateTableRows()}</tbody>
+            <table className="border-collapse">
+              <tbody>
+                {matrix.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell, cellIndex) => (
+                      <td key={cellIndex} className="border border-gray-800 p-2">
+                        <input
+                          type="number"
+                          value={cell}
+                          onChange={(event) => handleCellChange(event, rowIndex, cellIndex)}
+                          readOnly={rowIndex === cellIndex || rowIndex > cellIndex}
+                          className="w-full"
+                          required
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         )}
@@ -105,7 +111,7 @@ export const Form = () => {
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           type="submit"
         >
-          Siguente
+          Procesar
         </button>
       </form>
     </div>
