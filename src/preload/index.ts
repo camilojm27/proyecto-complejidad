@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   ls: () => ipcRenderer.send('ls'),
   getLs: () => ipcRenderer.invoke('get:ls'),
-  minizinc: () => ipcRenderer.invoke('minizinc')
+  miniexec: (data) => ipcRenderer.invoke('mini:exec', data),
+  miniexample: () => ipcRenderer.invoke('mini:example')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -1,18 +1,28 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 export const Form = (): JSX.Element => {
   const [numTeams, setNumTeams] = useState(0)
   const [minSize, setMinSize] = useState(0)
   const [maxSize, setMaxSize] = useState(0)
   const [matrix, setMatrix] = useState([])
+  const [minizinc, setMinizinc] = useState('')
 
-  const navigate = useNavigate()
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setMinizinc('Procesando...')
     e.preventDefault()
-    console.log('Número de equipos:', numTeams)
-    console.log('Tamaño mínimo:', minSize)
-    console.log('Tamaño máximo:', maxSize)
-    //navigate(`/teams/${numTeams}/${minSize}/${maxSize}`)
+    const response = {
+      n: numTeams,
+      X: minSize,
+      Y: maxSize,
+      D: matrix
+    }
+    if (numTeams == 0 || numTeams % 2 == 1) {
+      alert('Verifique que el número de equipos sea par')
+      setMinizinc('')
+      return
+    }
+    const miniResponse = await window.api.miniexec(response)
+    setMinizinc(miniResponse)
   }
 
   const handleSizeChange = (event) => {
@@ -44,6 +54,8 @@ export const Form = (): JSX.Element => {
         <div className="mb-4">
           <label className="block font-bold mb-2" htmlFor="numEquipos">
             Número de equipos:
+            <br />
+            <small>El numero de equipos debe ser par</small>
           </label>
           <input
             className="border border-gray-400 p-2 w-full"
@@ -113,6 +125,7 @@ export const Form = (): JSX.Element => {
         >
           Procesar
         </button>
+        <pre>{minizinc}</pre>
       </form>
     </div>
   )

@@ -3,6 +3,8 @@ const { exec, spawn } = require('child_process')
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import path = require('path')
+import { jsonToDzn, writeStringToFile } from '../util/mzn'
 
 function createWindow() {
   // Create the browser window.
@@ -81,6 +83,45 @@ ipcMain.handle('get:ls', () => {
     ls.stdout.on('data', (data) => {
       console.table(`stdout: ${data}`)
       resolve(data.toString())
+    })
+  })
+})
+
+ipcMain.handle('mini:example', () => {
+  return new Promise((resolve, reject) => {
+    const ls = spawn('minizinc', [
+      '--solver',
+      'Gecode',
+      './minizinc/model.mzn',
+      './minizinc/data.dzn'
+    ])
+    ls.stdout.on('data', (data) => {
+      console.table(`stdout: ${data}`)
+      resolve(data.toString())
+    })
+  })
+})
+ipcMain.handle('mini:exec', (e, data) => {
+  const dznData = jsonToDzn(data)
+
+  writeStringToFile('./src/minizinc/data.dzn', dznData)
+  const hola = path.join(process.resourcesPath, '..', 'model.mzn')
+  // const model = path.join(__dirname, 'minizinc', 'model.mzn')
+  // const dataf = path.join(__dirname, 'minizinc', 'data.dzn')
+  console.log(path.join(__dirname))
+  return new Promise((resolve, reject) => {
+    const ls = spawn('minizinc', [
+      '--solver',
+      'Gecode',
+      './src/minizinc/model.mzn',
+      './src/minizinc/data.dzn'
+    ])
+    ls.stdout.on('data', (data) => {
+      console.table(`stdout: ${data}`)
+      resolve(data.toString())
+    })
+    ls.stderr.on('data', (data) => {
+      console.error(`stdout: ${data}`)
     })
   })
 })
