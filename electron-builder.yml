@@ -30,8 +30,6 @@ dmg:
 linux:
   target:
     - AppImage
-    - deb
-    - rpm
   maintainer: electronjs.org
   category: Utility
 appImage:

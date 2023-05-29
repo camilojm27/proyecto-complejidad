@@ -1,8 +1,9 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-const { exec, spawn } = require('child_process')
+const { spawn } = require('child_process')
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+// @ts-ignore
 import path = require('path')
 import { jsonToDzn, writeStringToFile } from '../util/mzn'
 
@@ -78,7 +79,7 @@ app.on('window-all-closed', () => {
 // })
 
 ipcMain.handle('get:ls', () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const ls = spawn('ls', ['-lh'])
     ls.stdout.on('data', (data) => {
       console.table(`stdout: ${data}`)
@@ -88,7 +89,7 @@ ipcMain.handle('get:ls', () => {
 })
 
 ipcMain.handle('mini:example', () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const ls = spawn('minizinc', [
       '--solver',
       'Gecode',
@@ -101,21 +102,31 @@ ipcMain.handle('mini:example', () => {
     })
   })
 })
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 ipcMain.handle('mini:exec', (e, data) => {
-  const dznData = jsonToDzn(data)
+  console.log(app.isPackaged)
+  let args: string[] = []
+  if (app.isPackaged) {
+    args = ['--solver', 'Gecode', './model.mzn', './data.dzn']
+  } else {
+    args = ['--solver', 'Gecode', './src/minizinc/model.mzn', './src/minizinc/data.dzn']
+  }
 
-  writeStringToFile('./src/minizinc/data.dzn', dznData)
-  const hola = path.join(process.resourcesPath, '..', 'model.mzn')
+  const dznData = jsonToDzn(data)
+  if (app.isPackaged) {
+    writeStringToFile('./data.dzn', dznData)
+  } else {
+    writeStringToFile('./src/minizinc/data.dzn', dznData)
+  }
+
+  //const hola = path.join(process.resourcesPath, '..', 'model.mzn')
   // const model = path.join(__dirname, 'minizinc', 'model.mzn')
   // const dataf = path.join(__dirname, 'minizinc', 'data.dzn')
   console.log(path.join(__dirname))
-  return new Promise((resolve, reject) => {
-    const ls = spawn('minizinc', [
-      '--solver',
-      'Gecode',
-      './src/minizinc/model.mzn',
-      './src/minizinc/data.dzn'
-    ])
+  return new Promise((resolve) => {
+    const ls = spawn('minizinc', args)
+
     ls.stdout.on('data', (data) => {
       console.table(`stdout: ${data}`)
       resolve(data.toString())
